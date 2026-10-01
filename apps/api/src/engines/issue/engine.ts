@@ -15,6 +15,7 @@ import type { LogQueryOpts, PaginatedLogResult } from './persistence/queries'
 import { getNextTurnIndex } from './persistence/queries'
 import { registerLogPipeline } from './pipeline'
 import { terminateProcess } from './process/cancel'
+import { trackStart } from './process/state'
 import {
   cancelAll,
   getActiveProcessesList,
@@ -167,18 +168,7 @@ export class IssueEngine {
    * pass either observes it or starts after the start's own write.
    */
   async trackStart<T>(issueId: string, fn: () => Promise<T>): Promise<T> {
-    const depth = this.ctx.startsInFlight.get(issueId) ?? 0
-    this.ctx.startsInFlight.set(issueId, depth + 1)
-    try {
-      return await fn()
-    } finally {
-      const current = this.ctx.startsInFlight.get(issueId) ?? 1
-      if (current > 1) {
-        this.ctx.startsInFlight.set(issueId, current - 1)
-      } else {
-        this.ctx.startsInFlight.delete(issueId)
-      }
-    }
+    return trackStart(this.ctx, issueId, fn)
   }
 
   /** Whether a start is in flight for the issue (see {@link trackStart}). */

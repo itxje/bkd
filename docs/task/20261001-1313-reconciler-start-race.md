@@ -88,3 +88,5 @@ Keeping the reconciler away from executions that are starting
   20260922-1712-api-execution-suite-order-flake.
 - `test/issue-lock.test.ts` builds an `EngineContext` literal, so it needed the
   new `startsInFlight` field.
+
+- 2026-10-01 18:34 follow-up: the engine-started follow-up after a turn (completion monitor merged queue, turn-completion pending flush, both through `spawnFollowUpProcess`) was not wrapped, so its spawn window stayed open; a new case in `test/reconciler-start-race.test.ts` holds that spawn and failed with `review` before `spawnFollowUpProcess` tracked its own start. `bun run check`: 750 API tests pass, lint 2 earlier frontend warnings.

@@ -2,7 +2,9 @@ import { beforeAll, describe, expect, test } from 'bun:test'
 import { eq } from 'drizzle-orm'
 import { db } from '@/db'
 import { issues as issuesTable, projects as projectsTable } from '@/db/schema'
+import { engineRegistry } from '@/engines/executors'
 import { issueEngine } from '@/engines/issue'
+import { spawnFollowUpProcess } from '@/engines/issue/lifecycle/spawn'
 import { reconcileStaleWorkingIssues } from '@/engines/reconciler'
 import { appEvents } from '@/events'
 /**
@@ -138,6 +140,42 @@ describe('reconcileStaleWorkingIssues with a start in flight', () => {
 
     open()
     await start
+  })
+
+  test('leaves an issue alone while a follow-up the engine starts itself is spawning', async () => {
+    // After a turn, the engine spawns a process for queued input without any request: the merged queue in
+    // the completion monitor and the pending flush in turn completion both reach spawnFollowUpProcess, which
+    // writes running and awaits the spawn before the process registers.
+    const issue = await createDirectIssue({ statusId: 'working', sessionStatus: 'completed' })
+    const executor = engineRegistry.get('codex') as unknown as Record<'spawn' | 'spawnFollowUp', (...args: unknown[]) => Promise<unknown>>
+    const original = { spawn: executor.spawn, spawnFollowUp: executor.spawnFollowUp }
+    const { held, open } = gate()
+    let entered!: () => void
+    const reached = new Promise<void>((resolve) => {
+      entered = resolve
+    })
+    for (const name of ['spawn', 'spawnFollowUp'] as const) {
+      executor[name] = async (...args: unknown[]) => {
+        entered()
+        await held
+        return original[name].apply(executor, args)
+      }
+    }
+    try {
+      const ctx = (issueEngine as unknown as { ctx: Parameters<typeof spawnFollowUpProcess>[0] }).ctx
+      const spawning = spawnFollowUpProcess(ctx, issue.id, 'queued input')
+      await reached
+      expect((await getIssue(issue.id))!.sessionStatus).toBe('running')
+      await reconcileStaleWorkingIssues()
+      const duringSpawn = await getIssue(issue.id)
+      expect(duringSpawn!.statusId).toBe('working')
+      expect(duringSpawn!.sessionStatus).toBe('running')
+      open()
+      await spawning
+    } finally {
+      open()
+      Object.assign(executor, original)
+    }
   })
 
   test('still repairs a genuinely stale issue alongside a starting one', async () => {
