@@ -9,6 +9,7 @@ import {
   killExistingSubprocessForIssue,
 } from '@/engines/issue/process/guards'
 import { killUnregistered, register } from '@/engines/issue/process/register'
+import { trackStart } from '@/engines/issue/process/state'
 import { persistUserMessage } from '@/engines/issue/user-message'
 import {
   getPermissionOptions,
@@ -229,7 +230,23 @@ export async function spawnRetry(
   logger.debug({ issueId, executionId, engineType, turnIndex }, 'issue_retry_spawned')
 }
 
+// The engine also spawns follow-ups for queued input after a turn, without a request to wrap: this marks the
+// start itself, from its write of 'running' until the process registers, so the reconciler leaves it alone.
 export async function spawnFollowUpProcess(
+  ctx: EngineContext,
+  issueId: string,
+  prompt: string,
+  model?: string,
+  permissionMode?: PermissionPolicy,
+  displayPrompt?: string,
+  metadata?: Record<string, unknown>,
+  opts?: { skipPersistMessage?: boolean },
+): Promise<{ executionId: string, messageId?: string | null }> {
+  return trackStart(ctx, issueId, () =>
+    spawnFollowUp(ctx, issueId, prompt, model, permissionMode, displayPrompt, metadata, opts))
+}
+
+async function spawnFollowUp(
   ctx: EngineContext,
   issueId: string,
   prompt: string,

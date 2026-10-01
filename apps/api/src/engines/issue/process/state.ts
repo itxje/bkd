@@ -2,6 +2,28 @@ import type { EngineContext } from '@/engines/issue/context'
 import type { ManagedProcess } from '@/engines/issue/types'
 import type { ProcessStatus } from '@/engines/types'
 
+// ---------- Starts in flight ----------
+
+/**
+ * Mark an issue as starting for the duration of `fn` (see IssueEngine.trackStart).
+ * The counter is raised synchronously, before `fn` runs, so a reconciler pass
+ * either observes it or starts after the start's own write.
+ */
+export async function trackStart<T>(ctx: EngineContext, issueId: string, fn: () => Promise<T>): Promise<T> {
+  const depth = ctx.startsInFlight.get(issueId) ?? 0
+  ctx.startsInFlight.set(issueId, depth + 1)
+  try {
+    return await fn()
+  } finally {
+    const current = ctx.startsInFlight.get(issueId) ?? 1
+    if (current > 1) {
+      ctx.startsInFlight.set(issueId, current - 1)
+    } else {
+      ctx.startsInFlight.delete(issueId)
+    }
+  }
+}
+
 // ---------- Active process queries ----------
 
 export function getActiveProcesses(ctx: EngineContext): ManagedProcess[] {
