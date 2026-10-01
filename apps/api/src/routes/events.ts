@@ -102,6 +102,10 @@ events.get('/', async (c) => {
         writeEvent('message-updated', data)
       })
 
+      // The response is sent with its first write; a comment opens it at once, after the
+      // subscriptions above, instead of at the first event or heartbeat.
+      stream.write(': connected\n\n').catch(stop)
+
       // Heartbeat every 15s — keeps connection alive and detects client disconnect
       const heartbeat = setInterval(() => {
         if (done) return
