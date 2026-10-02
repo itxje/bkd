@@ -43,6 +43,26 @@ Detailed status with memory metrics.
 }
 ```
 
+## GET /api/system
+
+What the machine running BKD and its agents has left: the 1-minute load average and the CPU count, available and total memory, and free and total space on the filesystem holding `ROOT_DIR` (data and worktrees). Inside a container, the cgroup v2 limits cap memory and CPUs; reclaimable page cache counts as available memory. Sizes are in bytes.
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "load": 4.13,
+    "cpus": 8,
+    "memAvailable": 16320000000,
+    "memTotal": 25769803776,
+    "diskFree": 103079215104,
+    "diskTotal": 528280977408
+  }
+}
+```
+
 ## GET /api/runtime
 
 Runtime information including Bun/Node versions, process details, and platform info. Requires `ENABLE_RUNTIME_ENDPOINT=true` environment variable; returns `404` otherwise.

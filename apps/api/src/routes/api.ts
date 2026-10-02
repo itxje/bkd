@@ -1,6 +1,8 @@
 import { createOpenAPIRouter } from '@/openapi/hono'
 import * as R from '@/openapi/routes'
 import { checkDbHealth } from '@/db'
+import { ROOT_DIR } from '@/root'
+import { readSystemStats } from '@/utils/system-stats'
 import { COMMIT, VERSION } from '@/version'
 import files from './files'
 import filesystem from './filesystem'
@@ -147,6 +149,10 @@ apiRoutes.openapi(R.getStatus, async (c) => {
       db: dbHealth,
     },
   })
+})
+
+apiRoutes.openapi(R.getSystem, async (c) => {
+  return c.json({ success: true, data: await readSystemStats({ disk: ROOT_DIR }) }, 200 as const)
 })
 
 // SEC-017: Gate /api/runtime behind explicit opt-in env var
