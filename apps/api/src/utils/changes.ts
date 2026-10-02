@@ -72,3 +72,17 @@ export async function resolveIssueDir(
   }
   return projectRoot
 }
+
+/**
+ * The branch named by the `## ` header that `git status --porcelain=v1 -b` prints first:
+ * `## main...origin/main [ahead 1]`, `## main`, or `## No commits yet on main`. A detached
+ * HEAD, or a line that is not the header, has none.
+ */
+export function parseBranchHeader(line: string): string | null {
+  if (!line.startsWith('## ')) return null
+  const header = line.slice(3)
+  const unborn = header.match(/^(?:No commits yet|Initial commit) on (.+)$/)
+  if (unborn) return unborn[1]!
+  if (header.startsWith('HEAD (no branch)')) return null
+  return header.split('...')[0]!.split(' ')[0] || null
+}

@@ -423,6 +423,8 @@ export interface IssueChangesResponse {
   /** The issue runs in a worktree that does not exist now (not created yet, or cleaned up; its next run creates it). `root` is then the project root. */
   worktreeMissing?: boolean
   gitRepo: boolean
+  /** The branch the working directory is on; null on a detached HEAD, absent outside a git repository. */
+  branch?: string | null
   files: IssueChangedFile[]
   additions: number
   deletions: number

@@ -180,3 +180,4 @@ Each task is a single line linking to its detail file. All detailed information 
 - [x] [**20261021-0915-command-summary-width Let command summaries fill the row instead of a fixed cut**](20261021-0915-command-summary-width.md) `P2`
 - [x] [**20261023-1714-model-change-outside-working Apply a model change immediately outside working**](20261023-1714-model-change-outside-working.md) `P2`
 - [x] [**20261002-2017-host-resources-endpoint Report the host's load, memory and disk**](20261002-2017-host-resources-endpoint.md) `P2`
+- [x] [**20261002-2050-changes-branch Name the branch in an issue's changes**](20261002-2050-changes-branch.md) `P2`
