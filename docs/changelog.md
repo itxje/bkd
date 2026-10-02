@@ -1057,3 +1057,7 @@ row width, with the full command as the hover title (`compactCommand()` in
 ## 2026-10-01 18:34 [BUG-P1]
 
 The reconciler also leaves alone a follow-up the engine starts by itself. After a turn, queued input reaches `spawnFollowUpProcess` from the completion monitor (merged queue) and from turn completion (pending flush), with no request to wrap; it wrote `running` and awaited the spawn untracked, so a pass in that window still wrote `failed` + `review`. `spawnFollowUpProcess` now tracks its own start; the counter logic moved to `process/state.ts` as `trackStart(ctx, …)`, which `IssueEngine.trackStart` calls. Follow-up to `20261001-1313-reconciler-start-race`.
+
+## 2026-10-02 20:17 [feature]
+
+`GET /api/system` reports what the machine running BKD has left: load average and CPUs, available memory and free disk on the filesystem holding `ROOT_DIR`, capped by cgroup limits inside a container. Task: `20261002-2017-host-resources-endpoint`.

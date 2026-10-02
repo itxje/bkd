@@ -125,6 +125,27 @@ export const getStatus = createRoute({
   },
 })
 
+export const getSystem = createRoute({
+  method: 'get',
+  path: '/system',
+  tags: ['Meta'],
+  summary: 'Host resources',
+  description: 'The 1-minute load average and CPU count, and available memory and disk of the machine running BKD. '
+    + 'Memory and CPUs are capped by the cgroup limits inside a container; disk is the filesystem holding ROOT_DIR, '
+    + 'where data and worktrees live. Sizes are in bytes.',
+  operationId: 'getSystem',
+  responses: {
+    200: successResponse(z.object({
+      load: z.number(),
+      cpus: z.number(),
+      memAvailable: z.number(),
+      memTotal: z.number(),
+      diskFree: z.number(),
+      diskTotal: z.number(),
+    }), 'Host resources'),
+  },
+})
+
 // ── Projects ───────────────────────────────────────────
 
 export const listProjects = createRoute({
