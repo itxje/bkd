@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { countTextLines, isPathInsideRoot } from '@/utils/changes'
+import { countTextLines, isPathInsideRoot, parseBranchHeader } from '@/utils/changes'
 
 describe('isPathInsideRoot', () => {
   test('allows simple relative paths', () => {
@@ -55,5 +55,24 @@ describe('countTextLines', () => {
 
   test('single line with newline', () => {
     expect(countTextLines('hello\n')).toBe(1)
+  })
+})
+
+// `git status --porcelain=v1 -b` starts with a `## ` header naming the branch.
+describe('parseBranchHeader', () => {
+  test('names the branch with or without an upstream and tracking info', () => {
+    expect(parseBranchHeader('## main...origin/main [ahead 1, behind 2]')).toBe('main')
+    expect(parseBranchHeader('## feature/x')).toBe('feature/x')
+    expect(parseBranchHeader('## bkd/abc [gone]')).toBe('bkd/abc')
+  })
+
+  test('names the branch of a repository without commits', () => {
+    expect(parseBranchHeader('## No commits yet on main')).toBe('main')
+    expect(parseBranchHeader('## Initial commit on main')).toBe('main')
+  })
+
+  test('has no branch on a detached HEAD or a line that is not the header', () => {
+    expect(parseBranchHeader('## HEAD (no branch)')).toBeNull()
+    expect(parseBranchHeader(' M src/file.ts')).toBeNull()
   })
 })

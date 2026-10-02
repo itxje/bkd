@@ -306,6 +306,8 @@ export const IssueChangesResponseSchema = z.object({
   // cleaned up; its next run creates it). `root` is then the project root.
   worktreeMissing: z.boolean().optional(),
   gitRepo: z.boolean(),
+  // The branch the working directory is on; null on a detached HEAD, absent outside a git repository.
+  branch: z.string().nullable().optional(),
   files: z.array(IssueChangedFileSchema),
   additions: z.number().int(),
   deletions: z.number().int(),

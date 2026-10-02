@@ -1061,3 +1061,7 @@ The reconciler also leaves alone a follow-up the engine starts by itself. After 
 ## 2026-10-02 20:17 [feature]
 
 `GET /api/system` reports what the machine running BKD has left: load average and CPUs, available memory and free disk on the filesystem holding `ROOT_DIR`, capped by cgroup limits inside a container. Task: `20261002-2017-host-resources-endpoint`.
+
+## 2026-10-02 20:50 [feature]
+
+An issue's changes name the branch its working directory is on (`branch`, null on a detached HEAD), read from the same `git status` run with `-b`. Task: `20261002-2050-changes-branch`.

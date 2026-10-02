@@ -6,7 +6,7 @@ import { stat } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { runCommand } from '@/engines/spawn'
 import { findProject } from '@/db/helpers'
-import { checkOversized, countTextLines, isPathInsideRoot, resolveIssueDir } from '@/utils/changes'
+import { checkOversized, countTextLines, isPathInsideRoot, parseBranchHeader, resolveIssueDir } from '@/utils/changes'
 import { isGitRepo } from '@/utils/git'
 import { createOpenAPIRouter } from '@/openapi/hono'
 import * as R from '@/openapi/routes'
@@ -76,15 +76,18 @@ function parsePorcelainLine(line: string): GitChangedFile | null {
   return { path, status, type, staged, unstaged, previousPath }
 }
 
-async function listChangedFiles(cwd: string): Promise<{ files: GitChangedFile[], timedOut?: boolean }> {
-  const result = await runGit(['status', '--porcelain=v1', '-uall'], cwd)
-  if (result.timedOut) return { files: [], timedOut: true }
-  if (result.code !== 0) return { files: [] }
-  const { stdout } = result
-  const parsed = stdout
+// The changed files and, from the same `git status` run (-b adds a `## ` header line), the branch.
+async function listChangedFiles(cwd: string): Promise<{ files: GitChangedFile[], branch: string | null, timedOut?: boolean }> {
+  const result = await runGit(['status', '--porcelain=v1', '-b', '-uall'], cwd)
+  if (result.timedOut) return { files: [], branch: null, timedOut: true }
+  if (result.code !== 0) return { files: [], branch: null }
+  const lines = result.stdout
     .split('\n')
     .map(line => line.trimEnd())
     .filter(Boolean)
+  const branch = lines[0]?.startsWith('## ') ? parseBranchHeader(lines[0]) : null
+  const parsed = lines
+    .filter(line => !line.startsWith('## '))
     .map(parsePorcelainLine)
     .filter((f): f is GitChangedFile => !!f)
     .sort((a, b) => a.path.localeCompare(b.path))
@@ -94,7 +97,7 @@ async function listChangedFiles(cwd: string): Promise<{ files: GitChangedFile[],
     parsed.map(file => checkOversized(cwd, file.path)),
   )
   const files = parsed.map((file, i) => sizeFlags[i] ? { ...file, ...sizeFlags[i] } : file)
-  return { files }
+  return { files, branch }
 }
 
 async function summarizeFileLines(
@@ -184,12 +187,12 @@ changes.openapi(R.getIssueChanges, async (c) => {
     }, 200 as const)
   }
 
-  const { files, timedOut } = await listChangedFiles(root)
+  const { files, branch, timedOut } = await listChangedFiles(root)
 
   if (timedOut) {
     return c.json({
       success: true as const,
-      data: { root, worktreeMissing, gitRepo: true, files: [], additions: 0, deletions: 0, timedOut: true },
+      data: { root, worktreeMissing, gitRepo: true, branch, files: [], additions: 0, deletions: 0, timedOut: true },
     }, 200 as const)
   }
 
@@ -203,7 +206,7 @@ changes.openapi(R.getIssueChanges, async (c) => {
   const deletions = filesWithStats.reduce((sum, file) => sum + (file.deletions ?? 0), 0)
   return c.json({
     success: true as const,
-    data: { root, worktreeMissing, gitRepo: true, files: filesWithStats, additions, deletions },
+    data: { root, worktreeMissing, gitRepo: true, branch, files: filesWithStats, additions, deletions },
   }, 200 as const)
 })
 

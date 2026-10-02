@@ -12,6 +12,7 @@ Get git changes summary for an issue's working directory. Resolves worktree dire
   "data": {
     "root": "/path/to/repo",
     "gitRepo": true,
+    "branch": "main",
     "files": [{
       "path": "...",
       "status": "M ",
@@ -28,7 +29,9 @@ Get git changes summary for an issue's working directory. Resolves worktree dire
 }
 ```
 
-Returns `gitRepo: false` with empty files if the directory is not a git repository.
+`branch` is the branch the working directory is on, read from the same `git status` run; it is `null` on a detached HEAD.
+
+Returns `gitRepo: false` with empty files and no `branch` if the directory is not a git repository.
 
 ## GET /api/projects/:projectId/issues/:id/changes/file
 
