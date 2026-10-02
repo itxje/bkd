@@ -178,3 +178,4 @@ Each task is a single line linking to its detail file. All detailed information 
 - [x] [**20261016-1829-messages-system Upgrade decision events into a messages system**](20261016-1829-messages-system.md) `P2`
 - [x] [**20261017-0516-message-cleanup-terminal-only Keep answered messages out of the cleanup**](20261017-0516-message-cleanup-terminal-only.md) `P1`
 - [x] [**20261021-0915-command-summary-width Let command summaries fill the row instead of a fixed cut**](20261021-0915-command-summary-width.md) `P2`
+- [x] [**20261002-2017-host-resources-endpoint Report the host's load, memory and disk**](20261002-2017-host-resources-endpoint.md) `P2`
