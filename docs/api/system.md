@@ -45,7 +45,7 @@ Detailed status with memory metrics.
 
 ## GET /api/system
 
-What the machine running BKD and its agents has left: the 1-minute load average and the CPU count, available and total memory, and free and total space on the filesystem holding `ROOT_DIR` (data and worktrees). Inside a container, the cgroup v2 limits cap memory and CPUs; reclaimable page cache counts as available memory. Sizes are in bytes.
+What the machine running BKD and its agents has left: the 1-minute load average and the CPU count, available and total memory, and free and total space on the filesystem holding `ROOT_DIR` (data and worktrees). Inside a container, the cgroup v2 limits cap memory and CPUs; reclaimable page cache counts as available memory. Sizes are in bytes. Disk space needs Bun 1.4 or later, the runtime `docs/bkd.lode.toml` pins: Bun 1.3's `statfs` has no `frsize`, and the two disk values are then `null`.
 
 **Response:**
 

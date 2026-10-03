@@ -54,7 +54,8 @@ export function diskSpace(disk: { frsize: number, blocks: number, bavail: number
 // `disk` is a path on the filesystem to measure; `root` relocates /proc and /sys for tests.
 export async function readSystemStats(options: { root?: string, disk: string }): Promise<SystemStats> {
   const root = options.root ?? '/'
-  // Bun's statfs reports frsize, which the installed @types/bun does not declare yet.
+  // statfs reports frsize from Bun 1.4 on; Bun 1.3 does not, and neither does the installed @types/bun. The
+  // runtime BKD ships with is 1.4 (docs/bkd.lode.toml), so disk space needs that version.
   const [mem, cpuCount, disk] = await Promise.all([
     memory(root),
     cpus(root),
