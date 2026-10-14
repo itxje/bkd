@@ -1065,3 +1065,14 @@ The reconciler also leaves alone a follow-up the engine starts by itself. After 
 ## 2026-10-02 20:50 [feature]
 
 An issue's changes name the branch its working directory is on (`branch`, null on a detached HEAD), read from the same `git status` run with `-b`. Task: `20261002-2050-changes-branch`.
+
+## 2026-10-14 03:31 [progress]
+
+Rebased the event stream and reconciler branch onto `1293921`, preserving all
+five original changes and the main branch decision-event subscription. Added
+an SSE regression test covering a decision event emitted before the opening
+chunk is consumed. Full repository checks passed (864 API tests, one skipped;
+197 frontend tests; lint, typecheck and build), and the added integration test
+passed separately with targeted lint and typecheck. The original branch tip
+remains available as `backup/event-stream-and-reconciler-pre-rebase-20261014`.
+Task and plan `20261014-0328-rebase-event-stream-and-reconciler` completed.
