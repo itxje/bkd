@@ -1,6 +1,6 @@
 # BKD - Plan Index
 
-> Updated: 2026-10-13
+> Updated: 2026-10-14
 
 ## Usage
 
@@ -82,3 +82,5 @@ Each plan is a single line linking to its detail file. All detailed information 
 - [x] [**20261016-0448-background-task-as-subagent Background Bash tasks render as subagents in the chat**](20261016-0448-background-task-as-subagent.md) `2026-10-16`
 - [x] [**20261016-1829-messages-system Upgrade decision events into a messages system**](20261016-1829-messages-system.md) `2026-10-16`
 - [ ] [**20261001-0952-event-stream-opens-at-once Open the event stream as soon as a client connects**](20261001-0952-event-stream-opens-at-once.md) `2026-10-01`
+
+- [x] [**20261014-0328-rebase-event-stream-and-reconciler Rebase event stream and reconciler changes onto main**](20261014-0328-rebase-event-stream-and-reconciler.md) `2026-10-14`
