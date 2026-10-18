@@ -1,6 +1,6 @@
 # BKD - Plan Index
 
-> Updated: 2026-10-14
+> Updated: 2026-10-18
 
 ## Usage
 
@@ -84,3 +84,5 @@ Each plan is a single line linking to its detail file. All detailed information 
 - [ ] [**20261001-0952-event-stream-opens-at-once Open the event stream as soon as a client connects**](20261001-0952-event-stream-opens-at-once.md) `2026-10-01`
 
 - [x] [**20261014-0328-rebase-event-stream-and-reconciler Rebase event stream and reconciler changes onto main**](20261014-0328-rebase-event-stream-and-reconciler.md) `2026-10-14`
+
+- [x] [**20261018-0858-rebase-patches-on-messages Rebase local patches onto the messages release**](20261018-0858-rebase-patches-on-messages.md) `2026-10-18`

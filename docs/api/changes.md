@@ -33,6 +33,10 @@ Get git changes summary for an issue's working directory. Resolves worktree dire
 
 Returns `gitRepo: false` with empty files and no `branch` if the directory is not a git repository.
 
+When an issue uses a worktree that has not been created or has been cleaned up, the response has
+`worktreeMissing: true`, empty files, and no `branch`. Its `root` identifies the project directory,
+but the project's branch and changes are not reported as the issue's workspace.
+
 ## GET /api/projects/:projectId/issues/:id/changes/file
 
 Get diff for a specific file. Returns unified diff patch, old text, and new text.

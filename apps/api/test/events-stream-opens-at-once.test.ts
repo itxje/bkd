@@ -21,31 +21,37 @@ test('the event stream sends a first chunk as soon as it opens', async () => {
   }
 })
 
-test('decision events are subscribed before the opening chunk is consumed', async () => {
+test('message events are subscribed before the opening chunk is consumed', async () => {
   const controller = new AbortController()
   const res = await app.request('/api/events', { signal: controller.signal })
   const reader = res.body!.getReader()
-  const event = { id: 'decision-test', campaignId: 'campaign-test', status: 'open' as const }
+  const event = {
+    id: 'message-test',
+    kind: 'decision' as const,
+    expects: 'reply' as const,
+    campaignId: 'campaign-test',
+    status: 'open' as const,
+  }
   let timeout: ReturnType<typeof setTimeout> | undefined
   try {
-    appEvents.emit('decision-event-updated', event)
+    appEvents.emit('message-updated', event)
     const chunks = await Promise.race([
       (async () => {
         const decoder = new TextDecoder()
         let text = ''
         while (!text.includes(`data: ${JSON.stringify(event)}\n\n`)) {
           const chunk = await reader.read()
-          if (chunk.done) throw new Error('stream ended before the decision event')
+          if (chunk.done) throw new Error('stream ended before the message event')
           text += decoder.decode(chunk.value, { stream: true })
         }
         return text
       })(),
       new Promise<never>((_, reject) => {
-        timeout = setTimeout(() => reject(new Error('no decision event within 1 s')), 1000)
+        timeout = setTimeout(() => reject(new Error('no message event within 1 s')), 1000)
       }),
     ])
     expect(chunks).toStartWith(': connected\n\n')
-    expect(chunks).toContain('event: decision-event-updated\n')
+    expect(chunks).toContain('event: message-updated\n')
   } finally {
     clearTimeout(timeout)
     controller.abort()

@@ -175,15 +175,17 @@ describe('auto-cleanup cron', () => {
 describe('issue changes root', () => {
   test('flags a worktree issue whose worktree is gone instead of passing off the main checkout', async () => {
     const { id, path } = await createWorktreeIssue()
-    const present = expectSuccess(await get<{ root: string, worktreeMissing?: boolean }>(`/api/projects/${projectId}/issues/${id}/changes`))
+    const present = expectSuccess(await get<{ root: string, worktreeMissing?: boolean, branch?: string | null }>(`/api/projects/${projectId}/issues/${id}/changes`))
     expect(present.worktreeMissing).toBeFalsy()
+    expect(present.branch).toBe(`bkd/${id}`)
 
     rmSync(path, { recursive: true, force: true })
     // The main checkout has its own change, which must not pass for the issue's
     writeFileSync(join(gitRoot, 'main-only.txt'), 'not the issue\n')
     try {
-      const missing = expectSuccess(await get<{ root: string, worktreeMissing?: boolean, files: unknown[] }>(`/api/projects/${projectId}/issues/${id}/changes`))
+      const missing = expectSuccess(await get<{ root: string, worktreeMissing?: boolean, branch?: string | null, files: unknown[] }>(`/api/projects/${projectId}/issues/${id}/changes`))
       expect(missing.worktreeMissing).toBe(true)
+      expect(missing.branch).toBeUndefined()
       expect(missing.files).toEqual([])
 
       const patch = expectSuccess(await get<{ patch: string }>(`/api/projects/${projectId}/issues/${id}/changes/file?path=main-only.txt`))
