@@ -1,6 +1,6 @@
 # BKD - Task List
 
-> Updated: 2026-10-14
+> Updated: 2026-10-18
 
 ## Usage
 
@@ -182,3 +182,5 @@ Each task is a single line linking to its detail file. All detailed information 
 - [x] [**20261002-2050-changes-branch Name the branch in an issue's changes**](20261002-2050-changes-branch.md) `P2`
 
 - [x] [**20261014-0328-rebase-event-stream-and-reconciler Rebase event stream and reconciler changes onto main**](20261014-0328-rebase-event-stream-and-reconciler.md) `P1`
+
+- [x] [**20261018-0858-rebase-patches-on-messages Rebase local patches onto the messages release**](20261018-0858-rebase-patches-on-messages.md) `P1`

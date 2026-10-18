@@ -1076,3 +1076,14 @@ chunk is consumed. Full repository checks passed (864 API tests, one skipped;
 passed separately with targeted lint and typecheck. The original branch tip
 remains available as `backup/event-stream-and-reconciler-pre-rebase-20261014`.
 Task and plan `20261014-0328-rebase-event-stream-and-reconciler` completed.
+
+## 2026-10-18 09:02 [progress]
+
+Rebased the event stream and reconciler patches onto `286bced` (v0.3.22).
+Adapted SSE regression coverage to `message-updated` and verified that a missing
+worktree does not expose the project's branch. Focused tests (45), frontend
+tests (285), lint, typecheck and build passed. The full API suite has 935 passes,
+one skip and one failure reproduced on clean main: decision and message tests
+share campaign fixtures (taskist #462). The original tip is retained at
+`backup/event-stream-and-reconciler-pre-rebase-20261018`.
+Task and plan `20261018-0858-rebase-patches-on-messages` completed.
