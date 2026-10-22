@@ -40,5 +40,7 @@ Publishing patched releases automatically
     - A push run decided nothing was due.
     - A manual dry run passed `bun run check` (942 pass) and built the package.
 - The deploy key is stored as an environment secret: the token can manage environment secrets but not repository secrets. The `patched-release` environment admits only `dev`.
-- **Remaining:**
-  - The lode source switch, which needs a read-only token and a restart of the whole container: lode-group exits with any lode, and the container's restart policy brings it back.
+- The host's `lode.toml` reads `[update] github = "itxje/bkd"` with a read-only token in `[http] headers`, and is mode 600; a backup is kept outside the repository. Checks:
+  - `lode-cli status` resolves `0.3.23-p2` as latest.
+  - The token downloads the asset, and a write is refused with 403.
+- **Remaining:** the running lode applies the new source only after it restarts. Restarting it restarts the whole container: lode-group exits with any lode, and the container's restart policy brings it back.
