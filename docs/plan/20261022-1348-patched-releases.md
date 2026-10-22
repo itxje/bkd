@@ -14,7 +14,7 @@
   - The release tag, without its leading `v`, is the version.
   - The asset is selected by its exact name, `bkd-server.tar.gz`.
 - **The upstream release workflow cannot be reused.** `release.yml` only accepts `vX.Y.Z` tags and runs on tag pushes, so it is disabled in the patch repository.
-- **The token cannot push the rebased branch.** A workflow's `GITHUB_TOKEN` cannot push commits that change workflow files. A rebase onto a new release usually carries upstream workflow changes, so the push uses a write deploy key, stored as the `PATCH_DEPLOY_KEY` secret.
+- **The token cannot push the rebased branch.** A workflow's `GITHUB_TOKEN` cannot push commits that change workflow files. A rebase onto a new release usually carries upstream workflow changes, so the push uses a write deploy key. The key is stored as the `PATCH_DEPLOY_KEY` secret of the `patched-release` environment, which admits only the `dev` branch.
 
 ## Proposal
 
@@ -46,7 +46,7 @@
 ## Scope
 
 - New: `.github/workflows/patched-release.yml`, `.github/scripts/patched-release.sh`.
-- In the patch repository: the deploy key, the `PATCH_DEPLOY_KEY` secret, and `release.yml` disabled.
+- In the patch repository: the deploy key, the `patched-release` environment (`dev` only) with the `PATCH_DEPLOY_KEY` secret, and `release.yml` disabled.
 - On the host: `lode.toml`.
 
 ## Alternatives

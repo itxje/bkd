@@ -39,6 +39,6 @@ Publishing patched releases automatically
   - CI results:
     - A push run decided nothing was due.
     - A manual dry run passed `bun run check` (942 pass) and built the package.
+- The deploy key is stored as an environment secret: the token can manage environment secrets but not repository secrets. The `patched-release` environment admits only `dev`.
 - **Remaining:**
-  - The `PATCH_DEPLOY_KEY` secret: the current token cannot manage Actions secrets.
   - The lode source switch, which needs a read-only token and a restart of the whole container: lode-group exits with any lode, and the container's restart policy brings it back.
