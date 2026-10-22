@@ -1087,3 +1087,8 @@ one skip and one failure reproduced on clean main: decision and message tests
 share campaign fixtures (taskist #462). The original tip is retained at
 `backup/event-stream-and-reconciler-pre-rebase-20261018`.
 Task and plan `20261018-0858-rebase-patches-on-messages` completed.
+
+## 2026-10-22 13:40 [BUG-P1]
+
+The Claude skip-permissions setting had no effect. The CLI received `--dangerously-skip-permissions`, but the `set_permission_mode` request that followed sent `auto`, which since the `auto` policy mapping change selects Claude's classifier-driven `auto` mode. With the setting on, the request now sends `bypassPermissions`. Covered by `test/claude-permission-mode.test.ts`.
+Task `20261022-1323-claude-skip-permissions-bypass` completed.

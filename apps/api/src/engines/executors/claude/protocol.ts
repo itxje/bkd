@@ -338,9 +338,12 @@ export class ClaudeProtocolHandler {
    * Set the SDK permission mode.
    * This replaces CLI-level permission flags (e.g. --dangerously-skip-permissions)
    * with a proper SDK control request.
+   * With `skipPermissions` the session runs in `bypassPermissions`, matching
+   * --dangerously-skip-permissions; the `auto` policy alone maps to the
+   * classifier-driven `auto` mode, which would undo that flag.
    */
-  setPermissionMode(policy: PermissionPolicy): void {
-    const sdkMode = mapPermissionMode(policy)
+  setPermissionMode(policy: PermissionPolicy, skipPermissions = false): void {
+    const sdkMode = skipPermissions ? 'bypassPermissions' : mapPermissionMode(policy)
     this.writeJson({
       type: 'control_request',
       request_id: ulid(),

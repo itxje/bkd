@@ -184,3 +184,5 @@ Each task is a single line linking to its detail file. All detailed information 
 - [x] [**20261014-0328-rebase-event-stream-and-reconciler Rebase event stream and reconciler changes onto main**](20261014-0328-rebase-event-stream-and-reconciler.md) `P1`
 
 - [x] [**20261018-0858-rebase-patches-on-messages Rebase local patches onto the messages release**](20261018-0858-rebase-patches-on-messages.md) `P1`
+
+- [x] [**20261022-1323-claude-skip-permissions-bypass Put Claude sessions in bypassPermissions when skip permissions is on**](20261022-1323-claude-skip-permissions-bypass.md) `P1`
