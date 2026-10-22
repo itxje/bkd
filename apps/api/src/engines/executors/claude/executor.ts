@@ -518,7 +518,7 @@ export class ClaudeCodeExecutor implements EngineExecutor {
     const skipPerm = (await getAppSetting(SKIP_PERMISSIONS_KEY)) === 'true'
     const effectiveMode: PermissionPolicy = skipPerm ? 'auto' : permissionMode
     handler.initialize(buildHooks(effectiveMode))
-    handler.setPermissionMode(effectiveMode)
+    handler.setPermissionMode(effectiveMode, skipPerm)
     handler.sendUserMessage(options.prompt)
 
     logger.debug(
