@@ -25,7 +25,7 @@
   4. Rebase. A conflict fails the run.
   5. Decide whether a release is needed: no, when the tree outside `docs/` and `.github/` matches the last `v<version>-p<n>` tag.
   6. Print `version`, `tag`, `release` and `rebased`.
-- **The workflow.** `.github/workflows/patched-release.yml` runs on a schedule (hourly), on a push to `dev`, and on `workflow_dispatch` with a `dry_run` input. In order, it:
+- **The workflow.** `.github/workflows/patched-release.yml` runs on a schedule (every 6 hours, to keep the private repository's Actions minutes low), on a push to `dev`, and on `workflow_dispatch` with a `dry_run` input. In order, it:
   1. runs the prepare step;
   2. runs `bun run check` and `bun run package --version <upstream>`;
   3. force-pushes `dev` with a lease, through the deploy key;

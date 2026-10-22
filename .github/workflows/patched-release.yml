@@ -5,7 +5,7 @@ name: Patched release
 
 on:
   schedule:
-    - cron: "23 * * * *"
+    - cron: "23 */6 * * *"
   push:
     branches: [dev]
   workflow_dispatch:
