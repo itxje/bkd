@@ -1,0 +1,102 @@
+name: Patched release
+
+# Rebases the patches on `dev` onto the latest upstream release and publishes the result as
+# `v<upstream>-p<n>`, the release a patched BKD's lode installs from this repository.
+
+on:
+  schedule:
+    - cron: "23 * * * *"
+  push:
+    branches: [dev]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Check and package without pushing dev or publishing a release
+        type: boolean
+        default: true
+
+concurrency:
+  group: patched-release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Rebase, check and publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+    steps:
+      # The deploy key pushes the rebased branch: GITHUB_TOKEN may not push commits that
+      # change workflow files, and upstream releases usually carry such commits.
+      - uses: actions/checkout@v7
+        with:
+          ref: dev
+          fetch-depth: 0
+          ssh-key: ${{ secrets.PATCH_DEPLOY_KEY }}
+
+      - name: Rebase onto the latest upstream release
+        id: prep
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          .github/scripts/patched-release.sh
+
+      - name: Setup Bun
+        if: steps.prep.outputs.release == 'true' || env.DRY_RUN == 'true'
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.4.2
+
+      - name: Setup Node.js
+        if: steps.prep.outputs.release == 'true' || env.DRY_RUN == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Cache dependencies
+        if: steps.prep.outputs.release == 'true' || env.DRY_RUN == 'true'
+        uses: actions/cache@v6
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: ${{ runner.os }}-bun-
+
+      - name: Check and package
+        if: steps.prep.outputs.release == 'true' || env.DRY_RUN == 'true'
+        run: |
+          set -euo pipefail
+          bun install --frozen-lockfile
+          bun run check
+          bun run package --version "${{ steps.prep.outputs.version }}"
+          cat dist/checksums.txt
+
+      - name: Push the rebased dev
+        if: env.DRY_RUN != 'true' && steps.prep.outputs.rebased == 'true'
+        run: git push --force-with-lease="dev:${{ steps.prep.outputs.before }}" origin HEAD:dev
+
+      # Published as a draft first and made latest once the assets are attached, so lode
+      # never resolves a latest release it cannot install.
+      - name: Publish the release
+        if: env.DRY_RUN != 'true' && steps.prep.outputs.release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.prep.outputs.tag }}
+          VERSION: ${{ steps.prep.outputs.version }}
+        run: |
+          set -euo pipefail
+          git tag "$TAG"
+          git push origin "refs/tags/$TAG"
+          {
+            echo "Upstream v$VERSION with these patches:"
+            echo
+            git log --format='- %s' "v$VERSION..HEAD"
+          } > notes.md
+          gh release create "$TAG" dist/bkd-server.tar.gz dist/checksums.txt \
+            --repo "$GITHUB_REPOSITORY" --verify-tag --title "$TAG" --notes-file notes.md --draft
+          gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false --latest
