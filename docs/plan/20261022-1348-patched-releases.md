@@ -29,7 +29,7 @@
   1. runs the prepare step;
   2. runs `bun run check` and `bun run package --version <upstream>`;
   3. force-pushes `dev` with a lease, through the deploy key;
-  4. creates a draft release with `bkd-server.tar.gz` and `checksums.txt`, then publishes it as latest.
+  4. creates a draft release with `bkd-server.tar.gz` and `checksums.txt`, then publishes it as latest. Tags are `v<upstream>-p.<n>`.
 
   Runs are serialised by a concurrency group.
 - **lode.**
@@ -39,7 +39,11 @@
 
 ## Risks
 
-- **Version ordering.** Versions are semver prereleases (`0.3.24-p1`). They order correctly against each other while `n` stays below 10, because `p10` sorts lexically before `p9`.
+- **Version ordering.** Patched versions are semver prereleases, `X.Y.Z-p.N`.
+  - `N` is a separate numeric identifier, so `p.10` sorts after `p.9`. In the older form `X.Y.Z-pN` the identifier is compared as a string, and `p10` sorts before `p9`.
+  - A version first published in the older form (`0.3.23-p2`) keeps it, because every `p.N` sorts before `p2` and lode would not offer the switch. From the next upstream release on, the new form applies.
+  - A prerelease sorts before the plain release (`0.3.23-p.1 < 0.3.23`). This does not matter while the source only lists patched releases, but a server moving from an unpatched `X.Y.Z` to a patched release of the same version needs one explicit `lode-cli update --version`.
+  - Build metadata (`+pN`) was rejected, because semver ignores it when ordering.
 - **Rewritten history.** The rebased `dev` is force-pushed. A local `dev` checkout must be reset to `itxje/dev` before new patches are committed.
 - **Failure notice.** A failed run is reported only through GitHub's workflow failure notification.
 
