@@ -32,3 +32,13 @@ Publishing patched releases automatically
 ## Notes
 
 - Plan: [../plan/20261022-1348-patched-releases.md](../plan/20261022-1348-patched-releases.md)
+- **2026-10-22 progress:**
+  - `.github/scripts/patched-release.sh` was tested locally in six cases: no release yet, unchanged, docs-only change, code change, rebase onto a new release, and conflict. The conflict case exits 1 and leaves the branch untouched.
+  - The workflow passes actionlint and shellcheck. `oven-sh/setup-bun` is pinned to a commit SHA, and `GH_TOKEN` is scoped to the steps that call `gh`.
+  - The patch repository disables the upstream `Release` workflow. `v0.3.23-p2` was published from the package built at `f3e8d39`.
+  - CI results:
+    - A push run decided nothing was due.
+    - A manual dry run passed `bun run check` (942 pass) and built the package.
+- **Remaining:**
+  - The `PATCH_DEPLOY_KEY` secret: the current token cannot manage Actions secrets.
+  - The lode source switch, which needs a read-only token and a restart of the whole container: lode-group exits with any lode, and the container's restart policy brings it back.
