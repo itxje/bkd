@@ -1,7 +1,7 @@
 name: Patched release
 
 # Rebases the patches on `dev` onto the latest upstream release and publishes the result as
-# `v<upstream>-p<n>`, the release a patched BKD's lode installs from this repository.
+# `v<upstream>-p.<n>`, the release a patched BKD's lode installs from this repository.
 
 on:
   schedule:

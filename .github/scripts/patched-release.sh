@@ -4,7 +4,7 @@
 #   before    the branch head before the rebase
 #   rebased   true when the rebase moved the branch
 #   version   the upstream release version, e.g. 0.3.24
-#   tag       the patched release tag to publish, e.g. v0.3.24-p1
+#   tag       the patched release tag to publish, e.g. v0.3.24-p.1
 #   release   true when the tree differs from the last patched release of that version
 #             outside docs/ and .github/
 #   patches   the number of patch commits on top of the upstream release
@@ -40,11 +40,19 @@ fi
 rebased=false
 [[ "$(git rev-parse HEAD)" == "$before" ]] || rebased=true
 
-last="$(git tag -l "v$version-p*" | sort -V | tail -1)"
+# Patched releases are v<version>-p.<n>: a numeric prerelease identifier, so p.10 sorts after
+# p.9. A version first released as v<version>-p<n> keeps that form, because semver sorts every
+# p.<n> before p<n> and lode would never offer the switch.
+last="$(git tag -l "v$version-p[0-9]*" | sort -V | tail -1)"
+sep=-p
+if [[ -z "$last" ]]; then
+  last="$(git tag -l "v$version-p.[0-9]*" | sort -V | tail -1)"
+  sep=-p.
+fi
 n=1
 release=true
 if [[ -n "$last" ]]; then
-  n=$(( ${last##*-p} + 1 ))
+  n=$(( ${last##*"$sep"} + 1 ))
   if git diff --quiet "$last" HEAD -- . ':(exclude)docs' ':(exclude).github'; then
     release=false
   fi
@@ -54,7 +62,7 @@ fi
   echo "before=$before"
   echo "rebased=$rebased"
   echo "version=$version"
-  echo "tag=v$version-p$n"
+  echo "tag=v$version$sep$n"
   echo "release=$release"
   echo "patches=$(git rev-list --count "$tag..HEAD")"
 } | tee -a "${GITHUB_OUTPUT:-/dev/null}"

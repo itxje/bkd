@@ -15,7 +15,7 @@ Acceptance criteria:
   - It rebases the patches onto the latest upstream release tag.
   - It runs `bun run check` and builds the package.
   - It force-pushes the rebased `dev`.
-  - It publishes a release `v<upstream>-p<n>` with the `bkd-server.tar.gz` asset.
+  - It publishes a release `v<upstream>-p.<n>` with the `bkd-server.tar.gz` asset.
 - No release is published when nothing outside `docs/` and `.github/` changed since the last patched release of that upstream version.
 - A rebase conflict or a failed check publishes nothing and fails the run.
 - A manual dry run builds and checks without pushing or publishing.
@@ -43,4 +43,5 @@ Publishing patched releases automatically
 - The host's `lode.toml` reads `[update] github = "itxje/bkd"` with a read-only token in `[http] headers`, and is mode 600; a backup is kept outside the repository. Checks:
   - `lode-cli status` resolves `0.3.23-p2` as latest.
   - The token downloads the asset, and a write is refused with 403.
+- Release tags moved to `v<upstream>-p.<n>`, so that ordering stays numeric past 9. A version already published as `-p<n>` (0.3.23) keeps its form. Ten local cases cover the numbering, and the orderings were checked with a semver implementation.
 - **Remaining:** the running lode applies the new source only after it restarts. Restarting it restarts the whole container: lode-group exits with any lode, and the container's restart policy brings it back.
