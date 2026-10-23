@@ -1,6 +1,6 @@
 # 20261022-1348-patched-releases Publish patched releases automatically
 
-- **status**: in_progress
+- **status**: completed
 - **priority**: P1
 - **owner**: claude/session-main
 - **createdAt**: 2026-10-22 13:48
@@ -44,4 +44,8 @@ Publishing patched releases automatically
   - `lode-cli status` resolves `0.3.23-p2` as latest.
   - The token downloads the asset, and a write is refused with 403.
 - Release tags moved to `v<upstream>-p.<n>`, so that ordering stays numeric past 9. A version already published as `-p<n>` (0.3.23) keeps its form. Ten local cases cover the numbering, and the orderings were checked with a semver implementation.
-- **Remaining:** the running lode applies the new source only after it restarts. Restarting it restarts the whole container: lode-group exits with any lode, and the container's restart policy brings it back.
+- **Lode switch applied:** the container was restarted on 2026-10-23. lode reports `source: github itxje/bkd` with one header, and resolves `0.3.24-p.1` as latest.
+- **First automatic release:** upstream published `v0.3.24` at 18:33 UTC on 2026-10-22. The scheduled run at 18:38 rebased the patches onto it, passed the check, pushed `dev` through the deploy key, and published `v0.3.24-p.1` with both assets.
+- The schedule then moved to every six hours.
+
+- complete: workflow publishes patched releases; lode switched to the patch repository

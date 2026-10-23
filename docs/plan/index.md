@@ -87,4 +87,4 @@ Each plan is a single line linking to its detail file. All detailed information 
 
 - [x] [**20261018-0858-rebase-patches-on-messages Rebase local patches onto the messages release**](20261018-0858-rebase-patches-on-messages.md) `2026-10-18`
 
-- [-] [**20261022-1348-patched-releases Publish patched releases automatically**](20261022-1348-patched-releases.md) `2026-10-22`
+- [x] [**20261022-1348-patched-releases Publish patched releases automatically**](20261022-1348-patched-releases.md) `2026-10-22`

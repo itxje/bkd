@@ -1,6 +1,6 @@
 # 20261022-1348-patched-releases Publish patched releases automatically
 
-- **status**: implementing
+- **status**: completed
 - **createdAt**: 2026-10-22 13:48
 - **approvedAt**: 2026-10-22 13:48
 - **relatedTask**: 20261022-1348-patched-releases

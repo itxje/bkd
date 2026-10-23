@@ -1092,3 +1092,11 @@ Task and plan `20261018-0858-rebase-patches-on-messages` completed.
 
 The Claude skip-permissions setting had no effect. The CLI received `--dangerously-skip-permissions`, but the `set_permission_mode` request that followed sent `auto`, which since the `auto` policy mapping change selects Claude's classifier-driven `auto` mode. With the setting on, the request now sends `bypassPermissions`. Covered by `test/claude-permission-mode.test.ts`.
 Task `20261022-1323-claude-skip-permissions-bypass` completed.
+
+## 2026-10-23 04:15 [progress]
+
+Patched releases are published automatically.
+- The `Patched release` workflow on `dev` rebases the patches onto the latest upstream release every six hours and on every push to `dev`, runs `bun run check`, and publishes `v<upstream>-p.<n>` with `bkd-server.tar.gz`.
+- The host's lode now updates from the patch repository, so the web UI's update button installs patched builds.
+- The first automatic release was `v0.3.24-p.1`.
+Task and plan `20261022-1348-patched-releases` completed.
