@@ -1100,3 +1100,7 @@ Patched releases are published automatically.
 - The host's lode now updates from the patch repository, so the web UI's update button installs patched builds.
 - The first automatic release was `v0.3.24-p.1`.
 Task and plan `20261022-1348-patched-releases` completed.
+
+## 2026-10-23 04:30 [decision]
+
+The patch repository is now public. lode installs a GitHub release asset from its `browser_download_url`, and for a private repository that URL rejects API tokens (404). The API asset URL with `Accept: application/octet-stream` works, but lode does not use it. The repository holds only open-source BKD and its patches. The read-only token stays in `lode.toml`, so the release checks use the authenticated API rate limit.
