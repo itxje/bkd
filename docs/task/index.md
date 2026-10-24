@@ -189,3 +189,5 @@ Each task is a single line linking to its detail file. All detailed information 
 - [x] [**20261022-1323-claude-skip-permissions-bypass Put Claude sessions in bypassPermissions when skip permissions is on**](20261022-1323-claude-skip-permissions-bypass.md) `P1`
 
 - [x] [**20261022-1348-patched-releases Publish patched releases automatically**](20261022-1348-patched-releases.md) `P1`
+
+- [x] [**20261024-1211-union-merge-append-logs Merge the append-only logs by union when rebasing patches**](20261024-1211-union-merge-append-logs.md) `P2`

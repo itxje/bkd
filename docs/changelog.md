@@ -1104,3 +1104,8 @@ Task and plan `20261022-1348-patched-releases` completed.
 ## 2026-10-23 04:30 [decision]
 
 The patch repository is now public. lode installs a GitHub release asset from its `browser_download_url`, and for a private repository that URL rejects API tokens (404). The API asset URL with `Accept: application/octet-stream` works, but lode does not use it. The repository holds only open-source BKD and its patches. The read-only token stays in `lode.toml`, so the release checks use the authenticated API rate limit.
+
+## 2026-10-24 12:15 [pitfall]
+
+The patched release rebase onto `v0.3.25` conflicted: upstream and a patch had both appended a line to the end of `docs/task/index.md`. It was resolved by hand, keeping both lines, and `v0.3.25-p.1` was published. The prepare script now merges `docs/task/index.md`, `docs/plan/index.md` and `docs/changelog.md` with git's `union` driver, set only for the checkout, so these appends no longer stop a release. Conflicts in code still fail the run.
+Task `20261024-1211-union-merge-append-logs` completed.

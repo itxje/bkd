@@ -31,6 +31,14 @@ base="$(git merge-base HEAD upstream/main)"
 git merge-base --is-ancestor "$base" "$tag" || {
   echo "patched-release: $tag is older than the patches' upstream base $(git rev-parse --short "$base")" >&2; exit 1; }
 
+# Upstream and the patches both append to these logs, so every release would conflict at
+# their tail; a union merge keeps both sides' lines. Set for this checkout only.
+attributes="$(git rev-parse --git-path info/attributes)"
+mkdir -p "$(dirname "$attributes")"
+for log in docs/task/index.md docs/plan/index.md docs/changelog.md; do
+  grep -qxF "$log merge=union" "$attributes" 2>/dev/null || echo "$log merge=union" >> "$attributes"
+done
+
 before="$(git rev-parse HEAD)"
 if ! git rebase --quiet "$tag"; then
   git rebase --abort
